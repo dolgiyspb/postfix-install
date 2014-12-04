@@ -58,7 +58,7 @@ function install_dovecot {
     save_current_dir
     local DOVECOT_DIR=`find . -name "dovecot-*" -type d`
     cd $DOVECOT_DIR
-    ./configure --with-pam
+    ./configure --with-pam --with-sql=yes --with-pgsql
     make
     make install
     cp -r /usr/local/share/doc/dovecot/example-config/* /usr/local/etc/dovecot/
