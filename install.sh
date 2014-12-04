@@ -12,6 +12,8 @@ function unpack_sources {
     mkdir $TEMP_DIR
     find . -name '*.tar.gz' -exec cp {} $TEMP_DIR \;
     cp database.init.sql $TEMP_DIR
+    cp -r dovecot $TEMP_DIR
+    cp -r postfix $TEMP_DIR
     cd $TEMP_DIR
     find . -name '*.tar.gz' -exec tar -xzf {} \; -exec rm {} \;
 }
@@ -46,7 +48,6 @@ function build_postfix {
     make -f Makefile.init makefiles 'CCARGS=-DHAS_PGSQL -I/usr/include/postgresql/' 'AUXLIBS=-L/usr/lib/postgresql/9.1/lib/ -lpq'
     make
     make upgrade
-    postconf -e 'mydestination = $myhostname, localhost.$mydomain, localhost, mydomain'
     newaliases
     postfix start
     restore_current_dir
@@ -64,8 +65,6 @@ function install_dovecot {
     openssl req -new -x509 -days 3650 -nodes -out /etc/ssl/certs/dovecot.pem -keyout /etc/ssl/private/dovecot.pem -subj "/C=RU/ST=Spb/L=Spb/O=Mstb/OU=721/CN=istok"
     adduser --system dovenull
     adduser --system dovecot
-    echo "disable_plaintext_auth = no" >> /usr/local/etc/dovecot/conf.d/10-auth.conf
-    echo "mail_location = mbox:~/mail:INBOX=/var/spool/mail/%u" >> /usr/local/etc/dovecot/conf.d/10-mail.conf
     dovecot
     restore_current_dir
 }
@@ -102,6 +101,8 @@ function create_adapters() {
     create_postfix_db_adapter $DB_USERNAME $DB_PASSWORD $DB_NAME "$VIRTUAL_MAILBOX_DOMAINS_QUERY" "virtual_mailbox_domains"
     create_postfix_db_adapter $DB_USERNAME $DB_PASSWORD $DB_NAME "$VIRTUAL_MAILBOX_MAPS_QUERY" "virtual_mailbox_maps"
     create_postfix_db_adapter $DB_USERNAME $DB_PASSWORD $DB_NAME "$VIRTUAL_MAILBOX_ALIAS_QUERY" "virtual_alias_maps"
+    chgrp postfix /etc/postfix/pgsql-*
+    chmod u=rw,g=r,o= /etc/postfix/pgsql-*
     postfix reload
 }
 
@@ -121,6 +122,17 @@ function create_postfix_db_adapter() {
     postconf -e $PARAMETR_NAME=pgsql:$FILENAME
 }
 
+function configure_dovecot {
+    groupadd vmail
+    useradd -g vmail vmail -d /var/vmail -m
+    chown -R vmail:vmail /var/vmail/
+    chmod u+w /var/vmail/
+}
+function copy_configs {
+    cp -r dovecot /usr/local/etc/
+    cp -r postfix /etc
+}
+
 function run {
     install_deps
 
@@ -133,6 +145,8 @@ function run {
     install_dovecot
 
     configure_database
+
+    copy_configs
 }
 
 run
