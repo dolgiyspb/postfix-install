@@ -133,6 +133,11 @@ function copy_configs {
     cp -r postfix /etc
 }
 
+function reload {
+    postfix reload
+    dovecot reload
+}
+
 function run {
     install_deps
 
@@ -149,6 +154,8 @@ function run {
     configure_dovecot
 
     copy_configs
+    
+    reload
 }
 
 run
