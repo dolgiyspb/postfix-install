@@ -70,12 +70,13 @@ function configure_database {
     local DB_USERNAME="postfix"
     local DB_PASSWORD="12345678"
     local DB_NAME="mails"
-    
-
     su postgres -c "createdb $DB_NAME"
     su postgres -c "createuser -D -R -S $DB_USERNAME"
     set_user_creds $DB_USERNAME $DB_PASSWORD $DB_NAME
-    su postgres -c "psql $DB_NAME < database.init.sql"  
+    cp database.init.sql /var/lib/postgresql
+    chown /var/lib/postgresql/database.init.sql postgres
+    su postgres -c "psql $DB_NAME < /var/lib/postgresql/database.init.sql"
+    echo "client_encoding = latin1" > /etc/postgresql/9.1/main/postgresql.conf
     create_adapters $DB_USERNAME $DB_PASSWORD $DB_NAME
     
 }
@@ -129,5 +130,6 @@ function run {
     configure_database
 }
 
-run
+#run
+configure_database
 
