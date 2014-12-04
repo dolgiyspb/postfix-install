@@ -53,6 +53,7 @@ function build_postfix {
 }
 
 function install_dovecot {
+    save_current_dir
     local DOVECOT_DIR=`find . -name "dovecot-*" -type d`
     cd $DOVECOT_DIR
     ./configure --with-pam
@@ -65,8 +66,11 @@ function install_dovecot {
     echo "disable_plaintext_auth = no" >> /usr/local/etc/dovecot/conf.d/10-auth.conf
     echo "mail_location = mbox:~/mail:INBOX=/var/spool/mail/%u" >> /usr/local/etc/dovecot/conf.d/10-mail.conf
     dovecot
+    restore_current_dir
 }
 function configure_database {
+    echo -n "configure database current dir: "
+    echo `pwd`
     local DB_USERNAME="postfix"
     local DB_PASSWORD="12345678"
     local DB_NAME="mails"
@@ -78,7 +82,6 @@ function configure_database {
     su postgres -c "psql $DB_NAME < /var/lib/postgresql/database.init.sql"
     echo "client_encoding = latin1" > /etc/postgresql/9.1/main/postgresql.conf
     create_adapters $DB_USERNAME $DB_PASSWORD $DB_NAME
-    
 }
 function set_user_creds() {
     local SETUP_STRING="ALTER USER $1 WITH PASSWORD '$2';"
