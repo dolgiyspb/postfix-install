@@ -11,6 +11,7 @@ function unpack_sources {
     local TEMP_DIR=~/mail-server-install
     mkdir $TEMP_DIR
     find . -name '*.tar.gz' -exec cp {} $TEMP_DIR \;
+    cp database.init.sql $TEMP_DIR
     cd $TEMP_DIR
     find . -name '*.tar.gz' -exec tar -xzf {} \; -exec rm {} \;
 }
