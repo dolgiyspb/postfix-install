@@ -145,6 +145,8 @@ function run {
     install_dovecot
 
     configure_database
+    
+    configure_dovecot
 
     copy_configs
 }
