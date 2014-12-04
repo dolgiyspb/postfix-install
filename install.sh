@@ -74,10 +74,16 @@ function configure_database {
 
     su postgres -c "createdb $DB_NAME"
     su postgres -c "createuser -D -R -S $DB_USERNAME"
-    su postgres -c "psql mail < \"ALTER USER $DB_USERNAME WITH PASSWORD '$DB_PASSWORD';\""
-    su postgres -c "psql mail < database.init.sql"  
+    set_user_creds $DB_USERNAME $DB_PASSWORD $DB_NAME
+    su postgres -c "psql $DB_NAME < database.init.sql"  
     create_adapters $DB_USERNAME $DB_PASSWORD $DB_NAME
     
+}
+function set_user_creds() {
+    local SETUP_STRING="ALTER USER $1 WITH PASSWORD '$2';"
+    echo ${SETUP_STRING} > user
+    su postgres -c "psql $3 < user"
+    rm user
 }
 
 function create_adapters() {
