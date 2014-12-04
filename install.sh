@@ -74,7 +74,7 @@ function configure_database {
     su postgres -c "createuser -D -R -S $DB_USERNAME"
     set_user_creds $DB_USERNAME $DB_PASSWORD $DB_NAME
     cp database.init.sql /var/lib/postgresql
-    chown /var/lib/postgresql/database.init.sql postgres
+    chown postgres /var/lib/postgresql/database.init.sql 
     su postgres -c "psql $DB_NAME < /var/lib/postgresql/database.init.sql"
     echo "client_encoding = latin1" > /etc/postgresql/9.1/main/postgresql.conf
     create_adapters $DB_USERNAME $DB_PASSWORD $DB_NAME
@@ -130,6 +130,6 @@ function run {
     configure_database
 }
 
-#run
-configure_database
+run
+#configure_database
 
