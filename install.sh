@@ -81,8 +81,9 @@ function configure_database {
     cp database.init.sql /var/lib/postgresql
     chown postgres /var/lib/postgresql/database.init.sql 
     su postgres -c "psql $DB_NAME < /var/lib/postgresql/database.init.sql"
-    echo "client_encoding = latin1" > /etc/postgresql/9.1/main/postgresql.conf
+    echo "client_encoding = latin1" >> /etc/postgresql/9.1/main/postgresql.conf
     create_adapters $DB_USERNAME $DB_PASSWORD $DB_NAME
+    service postgres restart
 }
 function set_user_creds() {
     local SETUP_STRING="ALTER USER $1 WITH PASSWORD '$2';"
