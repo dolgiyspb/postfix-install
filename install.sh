@@ -45,7 +45,7 @@ function build_postfix {
     adduser --system --group postfix
     addgroup postdrop
     cd $POSTFIX_DIR
-    make -f Makefile.init makefiles 'CCARGS=-DHAS_PGSQL -I/usr/include/postgresql/' 'AUXLIBS=-L/usr/lib/postgresql/9.1/lib/ -lpq'
+    make -f Makefile.init makefiles 'CCARGS=-DUSE_TLS -DUSE_SASL_AUTH -DHAS_PGSQL -I/usr/include/postgresql/' 'AUXLIBS=-L/usr/lib/postgresql/9.1/lib/ -lpq'
     make
     make upgrade
     newaliases

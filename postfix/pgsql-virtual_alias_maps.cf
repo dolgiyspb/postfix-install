@@ -1,0 +1,5 @@
+user = postfix
+password = 12345678
+hosts = 127.0.0.1
+dbname = mails
+query = SELECT destination FROM virtual_aliases WHERE source='%s'

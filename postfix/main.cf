@@ -72,7 +72,7 @@ mail_owner = postfix
 # from gethostname(). $myhostname is used as a default value for many
 # other configuration parameters.
 #
-#myhostname = host.domain.tld
+myhostname = mks2.istok.mail
 #myhostname = virtual.domain.tld
 
 # The mydomain parameter specifies the local internet domain name.
@@ -157,7 +157,7 @@ mail_owner = postfix
 #
 # See also below, section "REJECTING MAIL FOR UNKNOWN LOCAL USERS".
 #
-#mydestination = $myhostname, localhost.$mydomain, localhost
+#mydestination = localhost, localhost.$mydomain
 #mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain
 #mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain,
 #	mail.$mydomain, www.$mydomain, ftp.$mydomain
@@ -661,3 +661,12 @@ virtual_mailbox_maps = pgsql:/etc/postfix/pgsql-virtual_mailbox_maps.cf
 virtual_alias_maps = pgsql:/etc/postfix/pgsql-virtual_alias_maps.cf
 virtual_transport = dovecot
 dovecot_destination_recipient_limit = 1
+
+smtpd_recipient_restrictions = 
+    reject_unauth_destination
+    check_policy_service unix:private/policy
+
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_security_options = noanonymous
+smtpd_sasl_type = dovecot
+smtpd_sasl_path = private/auth
