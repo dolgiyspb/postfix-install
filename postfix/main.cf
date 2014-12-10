@@ -655,7 +655,8 @@ sample_directory = /etc/postfix
 #
 readme_directory = no
 inet_protocols = ipv4
-mydestination = localhost.$mydomain, localhost
+mydestination =
+#mydestination = localhost.$mydomain, localhost
 virtual_mailbox_domains = pgsql:/etc/postfix/pgsql-virtual_mailbox_domains.cf
 virtual_mailbox_maps = pgsql:/etc/postfix/pgsql-virtual_mailbox_maps.cf
 virtual_alias_maps = pgsql:/etc/postfix/pgsql-virtual_alias_maps.cf
@@ -663,10 +664,19 @@ virtual_transport = dovecot
 dovecot_destination_recipient_limit = 1
 
 smtpd_recipient_restrictions = 
+    permit_sasl_authenticated,
     reject_unauth_destination
-    check_policy_service unix:private/policy
+    
+#    check_policy_service unix:private/policy
 
 smtpd_sasl_auth_enable = yes
 smtpd_sasl_security_options = noanonymous
 smtpd_sasl_type = dovecot
 smtpd_sasl_path = private/auth
+smtpd_tls_cert_file = /etc/ssl/certs/dovecot.pem
+smtpd_tls_key_file = /etc/ssl/private/dovecot.pem
+smtp_tls_security_level = may
+smtpd_tls_security_level = may
+smtp_tls_note_starttls_offer = yes
+smtpd_tls_loglevel = 1
+broken_sasl_auth_clients = yes

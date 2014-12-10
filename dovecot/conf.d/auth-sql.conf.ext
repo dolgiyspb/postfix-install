@@ -28,3 +28,6 @@ userdb {
   driver = static
   args = uid=vmail gid=vmail home=/var/vmail/%d/%n allow_all_users=yes
 }
+
+auth_debug = yes
+#auth_debug_password = yes

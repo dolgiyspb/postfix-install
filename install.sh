@@ -62,7 +62,9 @@ function install_dovecot {
     make
     make install
     cp -r /usr/local/share/doc/dovecot/example-config/* /usr/local/etc/dovecot/
-    openssl req -new -x509 -days 3650 -nodes -out /etc/ssl/certs/dovecot.pem -keyout /etc/ssl/private/dovecot.pem -subj "/C=RU/ST=Spb/L=Spb/O=Mstb/OU=721/CN=istok"
+    local CERT=/etc/ssl/certs/dovecot.pem
+    local KEY=/etc/ssl/private/dovecot.pem
+    openssl req -new -x509 -days 3650 -nodes -out $CERT  -keyout $KEY  -subj "/C=RU/ST=Spb/L=Spb/O=Mstb/OU=721/CN=istok"
     adduser --system dovenull
     adduser --system dovecot
     dovecot
@@ -96,7 +98,7 @@ function create_adapters() {
     local DB_PASSWORD=$2
     local DB_NAME=$3
     local VIRTUAL_MAILBOX_DOMAINS_QUERY="SELECT 1 FROM virtual_domains WHERE name='%s'"
-    local VIRTUAL_MAILBOX_MAPS_QUERY="SELECT 1 FROM virtual_users WHERE email='%s'"
+    local VIRTUAL_MAILBOX_MAPS_QUERY="SELECT 1 FROM virtual_users WHERE where concat(email,'@',domain)='%u';"
     local VIRTUAL_MAILBOX_ALIAS_QUERY="SELECT destination FROM virtual_aliases WHERE source='%s'"
     create_postfix_db_adapter $DB_USERNAME $DB_PASSWORD $DB_NAME "$VIRTUAL_MAILBOX_DOMAINS_QUERY" "virtual_mailbox_domains"
     create_postfix_db_adapter $DB_USERNAME $DB_PASSWORD $DB_NAME "$VIRTUAL_MAILBOX_MAPS_QUERY" "virtual_mailbox_maps"
